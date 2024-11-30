@@ -9,7 +9,10 @@ import UIKit
 import TicketmasterFoundation
 import TicketmasterDiscoveryAPI
 
-class DiscoveryViewController: UITableViewController {
+class DiscoveryViewController: UIViewController {
+
+    private var events: [MockDataProvider.MockEvent] = []
+    private let mockHelper = MockAPIHelper.shared
 
     var menuDataSource = MenuBuilderDataSource()
     var didBuildMenu: Bool = false
@@ -47,11 +50,39 @@ class DiscoveryViewController: UITableViewController {
         
         title = "Discovery API"
         
+        if ConfigurationManager.shared.configuration.useMockData {
+            loadMockEvents()
+        } else {
+            loadRealEvents()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         buildRefreshMenu()
+    }
+    
+    private func loadMockEvents() {
+        mockHelper.searchEvents(query: "") { [weak self] events in
+            self?.events = events
+            // Refresh UI here
+        }
+    }
+    
+    private func loadRealEvents() {
+        // Original API implementation here
+    }
+    
+    // MARK: - Actions
+    @objc func searchButtonTapped() {
+        if ConfigurationManager.shared.configuration.useMockData {
+            mockHelper.searchEvents(query: searchText) { [weak self] events in
+                self?.events = events
+                // Refresh UI here
+            }
+        } else {
+            // Original search implementation
+        }
     }
 }

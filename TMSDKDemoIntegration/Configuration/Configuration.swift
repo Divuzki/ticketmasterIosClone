@@ -13,7 +13,7 @@ import TicketmasterAuthentication
 struct Configuration: Codable, Hashable {
         
     /// get your own API key from developer.ticketmaster.com
-    let apiKey: String
+    let apiKey: String?
     
     /// UK, IE, and Sport XR should use .UK, all others should use .US
     let region: TMAuthentication.TMXDeploymentRegion
@@ -33,13 +33,17 @@ struct Configuration: Codable, Hashable {
     /// which TM Host country to use for Events, Purchase, etc.
     let retailMarketDomain: MarketDomain
     
-    init(apiKey: String,
+    /// Enable mock mode to use dummy data instead of real API calls
+    let useMockData: Bool
+    
+    init(apiKey: String? = nil,
          region: TMAuthentication.TMXDeploymentRegion = .US,
          displayName: String,
          backgroundColor: UIColor? = nil,
          foregroundColor: UIColor? = nil,
          textTheme: TMAuthentication.ColorTheme = .light,
-         retailMarketDomain: MarketDomain = .US) {
+         retailMarketDomain: MarketDomain = .US,
+         useMockData: Bool = true) {
         self.apiKey = apiKey
         self.region = region
         self.displayName = displayName
@@ -47,6 +51,7 @@ struct Configuration: Codable, Hashable {
         self.foregroundColor = foregroundColor
         self.textTheme = textTheme
         self.retailMarketDomain = retailMarketDomain
+        self.useMockData = useMockData
     }
 }
 
@@ -59,7 +64,7 @@ extension Configuration {
         // TODO: set these values as your our defaults
         
         /// get your own API key from developer.ticketmaster.com
-        let apiKey: String = "<your apiKey>"
+        let apiKey: String? = "<your apiKey>"
         
         /// UK, IE, and Sport XR should use .UK, all others should use .US
         let region: TMAuthentication.TMXDeploymentRegion = .US
@@ -77,12 +82,14 @@ extension Configuration {
                              region: region,
                              displayName: displayName,
                              backgroundColor: backgroundColor,
-                             textTheme: textTheme)
+                             textTheme: textTheme,
+                             useMockData: true)
     }
     
     func save() {
         UserDefaultsManager.shared.set(apiKey, forKey: .configurationAPIKeyString)
         UserDefaultsManager.shared.set(region.rawValue, forKey: .configurationRegionString)
+        UserDefaultsManager.shared.set(useMockData, forKey: .configurationUseMockData)
     }
     
     static func load() -> Configuration? {
@@ -91,11 +98,14 @@ extension Configuration {
         guard let regionString = UserDefaultsManager.shared.string(.configurationRegionString),
               let region = TMAuthentication.TMXDeploymentRegion(rawValue: regionString) else { return nil }
         
+        guard let useMockData = UserDefaultsManager.shared.bool(.configurationUseMockData) else { return nil }
+        
         let oldConfig = Configuration.defaultConfiguration()
         return Configuration(apiKey: apiKey,
                              region: region,
                              displayName: oldConfig.displayName,
                              backgroundColor: oldConfig.backgroundColor,
-                             textTheme: oldConfig.textTheme)
+                             textTheme: oldConfig.textTheme,
+                             useMockData: useMockData)
     }
 }

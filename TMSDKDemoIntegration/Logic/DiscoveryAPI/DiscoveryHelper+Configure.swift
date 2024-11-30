@@ -10,8 +10,12 @@ import TicketmasterDiscoveryAPI // for DiscoveryService and TMDiscoveryAPI
 
 extension DiscoveryHelper {
     
-    func configure(configuration: Configuration, completion: @escaping (_ success: Bool) -> Void) {
-        guard configuration.apiKey != ConfigurationManager.badAPIKey else {
+    static func configure(with configuration: Configuration) {
+        guard let apiKey = configuration.apiKey else {
+            if configuration.useMockData {
+                print("Using mock data for Discovery API")
+                return
+            }
             fatalError("Set your apiKey in Configuration.swift")
         }
         
@@ -25,13 +29,11 @@ extension DiscoveryHelper {
         //TMDiscoveryAPI.shared.marketDomain = configuration.retailMarketDomain
 
         // now:
-        TMDiscoveryAPI.shared.configure(apiKey: configuration.apiKey,
+        TMDiscoveryAPI.shared.configure(apiKey: apiKey,
                                         region: configuration.region) { _ in
             self.discoveryService = TMDiscoveryAPI.shared.discoveryService
             
             print(" - DiscoveryAPI Configured")
-
-            completion(true)
         }
     }
 }

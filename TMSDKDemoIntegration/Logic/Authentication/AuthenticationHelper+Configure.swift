@@ -10,8 +10,12 @@ import TicketmasterAuthentication // for TMAuthentication
 
 extension AuthenticationHelper {
     
-    func configure(configuration: Configuration, completion: @escaping (_ success: Bool) -> Void) {
-        guard configuration.apiKey != ConfigurationManager.badAPIKey else {
+    static func configure(with configuration: Configuration) {
+        guard let apiKey = configuration.apiKey else {
+            if configuration.useMockData {
+                print("Using mock data for Authentication")
+                return
+            }
             fatalError("Set your apiKey in Configuration.swift")
         }
         
@@ -48,7 +52,7 @@ extension AuthenticationHelper {
         //TMAuthentication.shared.useCombinedLogin = false
 
         // build a combination of Settings and Branding
-        let tmxServiceSettings = TMAuthentication.TMXSettings(apiKey: configuration.apiKey,
+        let tmxServiceSettings = TMAuthentication.TMXSettings(apiKey: apiKey,
                                                               region: configuration.region)
         
         let branding = TMAuthentication.Branding(displayName: configuration.displayName,
@@ -64,12 +68,10 @@ extension AuthenticationHelper {
             // your API key may contain configurations for multiple backend services
             // the details are not needed for most common use-cases
             print(" - Authentication Configured: \(backendsConfigured.count)")
-            completion(true)
 
         } failure: { error in
             // something went wrong, probably the wrong apiKey+region combination
             print(" - Authentication Configuration Error: \(error.localizedDescription)")
-            completion(false)
         }
     }
 }

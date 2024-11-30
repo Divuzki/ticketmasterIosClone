@@ -53,6 +53,26 @@ class ConfigurationManager: NSObject {
     private(set) var purchaseHelper: PurchaseHelper?
     
     private(set) var ticketsHelper: TicketsHelper?
+    
+    static func initialize() {
+        shared.currentConfiguration = Configuration(
+            apiKey: nil,
+            displayName: "Ticketmaster Demo",
+            useMockData: true
+        )
+        
+        if shared.currentConfiguration.useMockData {
+            print("Running in mock mode with dummy data")
+            return
+        }
+        
+        // Only configure real APIs if not in mock mode
+        configureAuthenticationIfNeeded { _ in }
+        configureDiscoveryAPIIfNeeded { _ in }
+        configurePrePurchaseIfNeeded { _ in }
+        configurePurchaseIfNeeded { _ in }
+        configureTicketsIfNeeded { _ in }
+    }
 }
 
 
