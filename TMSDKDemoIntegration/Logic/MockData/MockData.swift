@@ -2,35 +2,32 @@ import Foundation
 import UIKit
 
 // MARK: - Mock Event Types
-public struct MockEvent: Codable, Hashable {
-    public let id: String
-    public let name: String
-    public let date: String
-    public let venue: String
-    public let imageURL: String
-    public let price: String
-    
-    public init(id: String, name: String, date: String, venue: String, imageURL: String, price: String) {
-        self.id = id
-        self.name = name
-        self.date = date
-        self.venue = venue
-        self.imageURL = imageURL
-        self.price = price
-    }
+public struct MockEvent {
+    let id: String
+    let name: String
+    let date: Date
+    let venue: String
+    let imageUrl: String
+    let minPrice: Double
+    let maxPrice: Double
 }
 
 // MARK: - Mock Ticket Types
-public struct MockUserTicket: Codable, Hashable {
-    public let eventName: String
-    public let eventDate: String
-    public let seatInfo: String
-    public let barcode: String
-    
-    public init(eventName: String, eventDate: String, seatInfo: String, barcode: String) {
-        self.eventName = eventName
-        self.eventDate = eventDate
-        self.seatInfo = seatInfo
-        self.barcode = barcode
-    }
+public struct MockUserTicket {
+    let eventId: String
+    let eventName: String
+    let eventDate: Date
+    let venue: String
+    let seatInfo: String
+    let barcode: String
+    let orderNumber: String
+}
+
+// MARK: - Mock Order Types
+public struct MockOrder {
+    let orderId: String
+    let eventId: String
+    let tickets: [MockUserTicket]
+    let purchaseDate: Date
+    let totalAmount: Double
 }

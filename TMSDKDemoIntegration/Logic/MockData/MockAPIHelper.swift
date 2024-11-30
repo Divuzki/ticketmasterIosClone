@@ -3,37 +3,52 @@ import UIKit
 
 public class MockAPIHelper {
     public static let shared = MockAPIHelper()
-    private let mockData = MockDataProvider.shared
+    private let dataProvider = MockDataProvider()
+    
     private init() {}
     
-    // MARK: - Discovery API Mocks
-    public func searchEvents(query: String, completion: @escaping ([MockEvent]) -> Void) {
-        // Simulate network delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            let results = self.mockData.searchEvents(query: query)
-            completion(results)
+    // Simulated network delay
+    private func simulateNetworkDelay(_ completion: @escaping () -> Void) {
+        let delay = Double.random(in: 0.5...1.5)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: completion)
+    }
+    
+    // MARK: - Event Methods
+    public func getEvents(completion: @escaping ([MockEvent]) -> Void) {
+        simulateNetworkDelay {
+            completion(self.dataProvider.getMockEvents())
         }
     }
     
-    public func getEventDetails(eventId: String, completion: @escaping (MockEvent?) -> Void) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            let event = self.mockData.mockEvents.first(where: { $0.id == eventId })
-            completion(event)
+    public func getEvent(id: String, completion: @escaping (MockEvent?) -> Void) {
+        simulateNetworkDelay {
+            completion(self.dataProvider.getMockEvent(id: id))
         }
     }
     
-    // MARK: - Purchase API Mocks
-    public func purchaseTicket(for eventId: String, completion: @escaping (Bool) -> Void) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            let success = self.mockData.purchaseTicket(for: eventId)
-            completion(success)
-        }
-    }
-    
-    // MARK: - Tickets API Mocks
+    // MARK: - Ticket Methods
     public func getUserTickets(completion: @escaping ([MockUserTicket]) -> Void) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            completion(self.mockData.mockUserTickets)
+        simulateNetworkDelay {
+            completion(self.dataProvider.getMockUserTickets())
+        }
+    }
+    
+    public func getTicket(barcode: String, completion: @escaping (MockUserTicket?) -> Void) {
+        simulateNetworkDelay {
+            completion(self.dataProvider.getMockUserTicket(barcode: barcode))
+        }
+    }
+    
+    // MARK: - Order Methods
+    public func getOrders(completion: @escaping ([MockOrder]) -> Void) {
+        simulateNetworkDelay {
+            completion(self.dataProvider.getMockOrders())
+        }
+    }
+    
+    public func getOrder(orderId: String, completion: @escaping (MockOrder?) -> Void) {
+        simulateNetworkDelay {
+            completion(self.dataProvider.getMockOrder(orderId: orderId))
         }
     }
 }
