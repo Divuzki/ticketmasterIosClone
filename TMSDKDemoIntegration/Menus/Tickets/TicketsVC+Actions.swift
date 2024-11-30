@@ -6,10 +6,21 @@
 //
 
 import Foundation
+import UIKit
 import TicketmasterFoundation
 import TicketmasterTickets
 
-extension TicketsViewController: MenuBuilderDataSourceDelegate {
+extension TicketsViewController {
+    
+    @objc func menuAction(_ sender: Any?) {
+        // Use mock data instead
+        MockConfiguration.shared.mockHelper.getUserTickets { tickets in
+            DispatchQueue.main.async {
+                // Present tickets UI
+                print("Mock Tickets:", tickets)
+            }
+        }
+    }
     
     func menuBuilderDataSource(_: MenuBuilderDataSource, didAction action: MenuBuilderAction, forCell cell: MenuBuilderTableViewCell) {
         

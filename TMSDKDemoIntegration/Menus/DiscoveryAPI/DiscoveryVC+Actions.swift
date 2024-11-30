@@ -8,8 +8,24 @@
 import Foundation
 import TicketmasterFoundation
 import TicketmasterDiscoveryAPI
+import UIKit
 
-extension DiscoveryViewController: MenuBuilderDataSourceDelegate {
+extension DiscoveryViewController {
+    
+    @objc func menuAction(_ sender: Any?) {
+        // Use mock data instead
+        MockConfiguration.shared.mockHelper.searchEvents("") { events in
+            DispatchQueue.main.async {
+                // Present events UI
+                print("Mock Events:", events)
+            }
+        }
+    }
+    
+    func setLanguage(_ language: TMLanguage) {
+        // No-op in mock mode
+        print("Setting language to \(language.rawValue) in mock mode")
+    }
     
     func menuBuilderDataSource(_: MenuBuilderDataSource, didAction action: MenuBuilderAction, forCell cell: MenuBuilderTableViewCell) {
         

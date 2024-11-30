@@ -9,13 +9,16 @@ import UIKit
 
 class BrandedNavigationController: UINavigationController {
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        let configuration = ConfigurationManager.shared.currentConfiguration
-        switch configuration.textTheme {
-        case .light:
-            return .lightContent
-        case .dark:
-            return .darkContent
-        }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Use mock theme
+        let barAppearance = UINavigationBarAppearance()
+        barAppearance.backgroundColor = .systemBlue
+        barAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        navigationBar.standardAppearance = barAppearance
+        navigationBar.scrollEdgeAppearance = barAppearance
+        navigationBar.tintColor = .white
+        navigationBar.barTintColor = .systemBlue
     }
 }
