@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 // MARK: - Mock Event Types
-public struct MockEvent {
+public struct MockEvent: Codable, Hashable {
     public let id: String
     public let name: String
     public let date: String
@@ -21,7 +21,7 @@ public struct MockEvent {
 }
 
 // MARK: - Mock Ticket Types
-public struct MockUserTicket {
+public struct MockUserTicket: Codable, Hashable {
     public let eventName: String
     public let eventDate: String
     public let seatInfo: String

@@ -13,24 +13,15 @@ class DiscoveryViewController: UITableViewController {
 
     private var events: [MockEvent] = []
     private let mockHelper = MockAPIHelper.shared
-
+    private var searchText: String = ""
+    
     var menuDataSource = MenuBuilderDataSource()
     var didBuildMenu: Bool = false
     
     var selectedLanguage: DiscoveryLocale {
-        get {
-            if let languageString = UserDefaultsManager.shared.string(.discoveryLanguageString),
-               let locale = DiscoveryLocale(rawValue: languageString) {
-                return locale
-            } else {
-                return .EN_US
-            }
-        }
-        set {
-            UserDefaultsManager.shared.set(newValue.rawValue, forKey: .discoveryLanguageString)
-        }
+        return DiscoveryLocale(rawValue: UserDefaultsManager.shared.string(.discoveryLanguageString) ?? "") ?? .enUS
     }
-
+    
     var selectedIdentifierType: DiscoveryHelper.DetailsIdentifierType {
         get {
             if let identifierString = UserDefaultsManager.shared.string(.discoveryIdentifierString),
@@ -60,13 +51,17 @@ class DiscoveryViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        buildRefreshMenu()
+        if !didBuildMenu {
+            buildMenu()
+        }
     }
     
     private func loadMockEvents() {
         mockHelper.searchEvents(query: "") { [weak self] events in
             self?.events = events
-            // Refresh UI here
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+            }
         }
     }
     
@@ -79,10 +74,27 @@ class DiscoveryViewController: UITableViewController {
         if ConfigurationManager.shared.configuration.useMockData {
             mockHelper.searchEvents(query: searchText) { [weak self] events in
                 self?.events = events
-                // Refresh UI here
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                }
             }
         } else {
             // Original search implementation
         }
+    }
+    
+    // MARK: - UITableViewDataSource
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return events.count
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "EventCell") ?? UITableViewCell(style: .subtitle, reuseIdentifier: "EventCell")
+        
+        let event = events[indexPath.row]
+        cell.textLabel?.text = event.name
+        cell.detailTextLabel?.text = "\(event.venue) - \(event.date)"
+        
+        return cell
     }
 }

@@ -20,7 +20,7 @@ class ConfigurationManager: NSObject {
     
     static let shared = ConfigurationManager()
     
-    var currentConfiguration: Configuration {
+    var configuration: Configuration {
         get {
             if let config = _currentConfig {
                 return config
@@ -34,12 +34,17 @@ class ConfigurationManager: NSObject {
             _currentConfig = newValue
             _currentConfig?.save()
             
-            // reset all existing helpers
-            authenticationHelper = nil
-            discoveryHelper = nil
-            prePurchaseHelper = nil
-            purchaseHelper = nil
-            ticketsHelper = nil
+            if newValue.useMockData {
+                print("Running in mock mode with dummy data")
+                return
+            }
+            
+            // Only configure real APIs if not in mock mode
+            configureAuthenticationIfNeeded { _ in }
+            configureDiscoveryAPIIfNeeded { _ in }
+            configurePrePurchaseIfNeeded { _ in }
+            configurePurchaseIfNeeded { _ in }
+            configureTicketsIfNeeded { _ in }
         }
     }
     private var _currentConfig: Configuration?
@@ -55,23 +60,11 @@ class ConfigurationManager: NSObject {
     private(set) var ticketsHelper: TicketsHelper?
     
     static func initialize() {
-        shared.currentConfiguration = Configuration(
+        shared.configuration = Configuration(
             apiKey: nil,
             displayName: "Ticketmaster Demo",
             useMockData: true
         )
-        
-        if shared.currentConfiguration.useMockData {
-            print("Running in mock mode with dummy data")
-            return
-        }
-        
-        // Only configure real APIs if not in mock mode
-        configureAuthenticationIfNeeded { _ in }
-        configureDiscoveryAPIIfNeeded { _ in }
-        configurePrePurchaseIfNeeded { _ in }
-        configurePurchaseIfNeeded { _ in }
-        configureTicketsIfNeeded { _ in }
     }
 }
 
@@ -89,7 +82,7 @@ extension ConfigurationManager {
     
     private func configureAuthentication(completion: @escaping (_ success: Bool) -> Void) {
         let authHelper = AuthenticationHelper()
-        authHelper.configure(configuration: currentConfiguration) { success in
+        authHelper.configure(configuration: configuration) { success in
             if success {
                 self.authenticationHelper = authHelper
             } else {
@@ -114,7 +107,7 @@ extension ConfigurationManager {
     
     private func configureDiscoveryAPI(completion: @escaping (_ success: Bool) -> Void) {
         let discoHelper = DiscoveryHelper()
-        discoHelper.configure(configuration: currentConfiguration) { success in
+        discoHelper.configure(configuration: configuration) { success in
             if success {
                 self.discoveryHelper = discoHelper
             } else {
@@ -139,7 +132,7 @@ extension ConfigurationManager {
     
     private func configurePrePurchase(completion: @escaping (_ success: Bool) -> Void) {
         let prepHelper = PrePurchaseHelper()
-        prepHelper.configure(configuration: currentConfiguration) { success in
+        prepHelper.configure(configuration: configuration) { success in
             if success {
                 self.prePurchaseHelper = prepHelper
             } else {
@@ -168,7 +161,7 @@ extension ConfigurationManager {
             if success {
                 // then  configure Purchase
                 let purchHelper = PurchaseHelper()
-                purchHelper.configure(configuration: self.currentConfiguration) { success in
+                purchHelper.configure(configuration: self.configuration) { success in
                     if success {
                         self.purchaseHelper = purchHelper
                     } else {
@@ -200,7 +193,7 @@ extension ConfigurationManager {
         configureAuthenticationIfNeeded { success in
             if success {
                 let tickHelper = TicketsHelper()
-                tickHelper.configure(configuration: self.currentConfiguration) { success in
+                tickHelper.configure(configuration: self.configuration) { success in
                     if success {
                         self.ticketsHelper = tickHelper
                     } else {
