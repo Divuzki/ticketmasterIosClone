@@ -4,6 +4,7 @@ import UIKit
 public class MockAPIHelper {
     public static let shared = MockAPIHelper()
     private let mockData = MockDataProvider.shared
+    private init() {}
     
     // MARK: - Discovery API Mocks
     public func searchEvents(query: String, completion: @escaping ([MockEvent]) -> Void) {
@@ -33,23 +34,6 @@ public class MockAPIHelper {
     public func getUserTickets(completion: @escaping ([MockUserTicket]) -> Void) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             completion(self.mockData.mockUserTickets)
-        }
-    }
-    
-    // MARK: - Authentication Mocks
-    public func isUserLoggedIn() -> Bool {
-        return true // Always return logged in for mock mode
-    }
-    
-    public func login(completion: @escaping (Bool) -> Void) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            completion(true) // Always succeed in mock mode
-        }
-    }
-    
-    public func logout(completion: @escaping () -> Void) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            completion()
         }
     }
 }

@@ -10,50 +10,14 @@ import TicketmasterFoundation
 import TicketmasterDiscoveryAPI
 
 class DiscoveryViewController: UITableViewController {
-
     private var events: [MockEvent] = []
     private let mockHelper = MockAPIHelper.shared
     private var searchText: String = ""
     
-    var menuDataSource = MenuBuilderDataSource()
-    var didBuildMenu: Bool = false
-    
-    var selectedLanguage: DiscoveryLocale {
-        return DiscoveryLocale(rawValue: UserDefaultsManager.shared.string(.discoveryLanguageString) ?? "") ?? .enUS
-    }
-    
-    var selectedIdentifierType: DiscoveryHelper.DetailsIdentifierType {
-        get {
-            if let identifierString = UserDefaultsManager.shared.string(.discoveryIdentifierString),
-               let identifier = DiscoveryHelper.DetailsIdentifierType(rawValue: identifierString) {
-                return identifier
-            } else {
-                return .legacyHost
-            }
-        }
-        set {
-            UserDefaultsManager.shared.set(newValue.rawValue, forKey: .discoveryIdentifierString)
-        }
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         title = "Discovery API"
-        
-        if ConfigurationManager.shared.configuration.useMockData {
-            loadMockEvents()
-        } else {
-            loadRealEvents()
-        }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        if !didBuildMenu {
-            buildMenu()
-        }
+        loadMockEvents()
     }
     
     private func loadMockEvents() {
@@ -65,21 +29,13 @@ class DiscoveryViewController: UITableViewController {
         }
     }
     
-    private func loadRealEvents() {
-        // Original API implementation here
-    }
-    
     // MARK: - Actions
     @objc func searchButtonTapped() {
-        if ConfigurationManager.shared.configuration.useMockData {
-            mockHelper.searchEvents(query: searchText) { [weak self] events in
-                self?.events = events
-                DispatchQueue.main.async {
-                    self?.tableView.reloadData()
-                }
+        mockHelper.searchEvents(query: searchText) { [weak self] events in
+            self?.events = events
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
             }
-        } else {
-            // Original search implementation
         }
     }
     
