@@ -9,9 +9,9 @@ import UIKit
 import TicketmasterFoundation
 import TicketmasterDiscoveryAPI
 
-class DiscoveryViewController: UIViewController {
+class DiscoveryViewController: UITableViewController {
 
-    private var events: [MockDataProvider.MockEvent] = []
+    private var events: [MockEvent] = []
     private let mockHelper = MockAPIHelper.shared
 
     var menuDataSource = MenuBuilderDataSource()

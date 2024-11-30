@@ -2,11 +2,11 @@ import Foundation
 import UIKit
 
 // Mock data provider to replace API calls
-class MockDataProvider {
-    static let shared = MockDataProvider()
+public class MockDataProvider {
+    public static let shared = MockDataProvider()
     
     // Mock Events
-    struct MockEvent {
+    public struct MockEvent {
         let id: String
         let name: String
         let date: String
@@ -15,7 +15,7 @@ class MockDataProvider {
         let price: String
     }
     
-    let mockEvents: [MockEvent] = [
+    public let mockEvents: [MockEvent] = [
         MockEvent(
             id: "mock1",
             name: "Taylor Swift | The Eras Tour",
@@ -59,14 +59,14 @@ class MockDataProvider {
     ]
     
     // Mock User Data
-    struct MockUserTicket {
+    public struct MockUserTicket {
         let eventName: String
         let eventDate: String
         let seatInfo: String
         let barcode: String
     }
     
-    let mockUserTickets: [MockUserTicket] = [
+    public let mockUserTickets: [MockUserTicket] = [
         MockUserTicket(
             eventName: "Taylor Swift | The Eras Tour",
             eventDate: "Dec 31, 2024",
@@ -82,13 +82,13 @@ class MockDataProvider {
     ]
     
     // Mock Search Results
-    func searchEvents(query: String) -> [MockEvent] {
+    public func searchEvents(query: String) -> [MockEvent] {
         // Simple mock search that returns all events containing the query string
         return mockEvents.filter { $0.name.lowercased().contains(query.lowercased()) }
     }
     
     // Mock Purchase Result
-    func purchaseTicket(for eventId: String) -> Bool {
+    public func purchaseTicket(for eventId: String) -> Bool {
         // Simulate successful purchase 90% of the time
         return Double.random(in: 0...1) < 0.9
     }
